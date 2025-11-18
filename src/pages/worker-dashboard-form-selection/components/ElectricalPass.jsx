@@ -167,6 +167,7 @@ const ElectricalPass = ({ sidebarCollapsed }) => {
                 <Input
                   label="Date"
                   name="date"
+                  type="date"
                   value={form.date}
                   onChange={handleChange}
                   placeholder="Enter date"
@@ -174,6 +175,7 @@ const ElectricalPass = ({ sidebarCollapsed }) => {
                 <Input
                   label="Time"
                   name="time"
+                  type="time"
                   value={form.time}
                   onChange={handleChange}
                   placeholder="Enter time"
@@ -735,71 +737,124 @@ const ElectricalPass = ({ sidebarCollapsed }) => {
               {/* Shock & Arc Flash Assessment */}
               <div className="grid grid-cols-2 gap-4 mt-6">
                 {/* Shock Hazard Assessment */}
-                <div className="border rounded-lg overflow-hidden">
+                {/* <div className="border rounded-lg overflow-hidden">
                   <div className="bg-gray-900 text-white text-center font-semibold py-2">
                     Shock Hazard Assessment
                   </div>
 
-                  {/* Header row */}
+                  
                   <div className="grid grid-cols-3 text-center font-semibold bg-gray-200 border-b">
                     <div>Likelihood of Occurrence of Harm</div>
                     <div className="col-span-2">Severity of Harm</div>
                   </div>
 
-                  {/* Severity values in SAME header row */}
+                 
                   <div className="grid grid-cols-3 text-center font-semibold bg-gray-200 border-b">
                     <div></div>
                     <div>&lt;30V</div>
                     <div>&gt;30V</div>
                   </div>
 
-                  {/* IMPROBABLE row */}
+                 
                   <div className="grid grid-cols-3 text-center border-b">
                     <div className="font-semibold">IMPROBABLE</div>
                     <div className="bg-green-300 font-semibold">LOW</div>
                     <div className="bg-yellow-300 font-semibold">MED</div>
                   </div>
 
-                  {/* POSSIBLE row */}
+                 
                   <div className="grid grid-cols-3 text-center">
                     <div className="font-semibold">POSSIBLE</div>
                     <div className="bg-green-300 font-semibold">LOW</div>
                     <div className="bg-red-400 font-semibold">HIGH</div>
                   </div>
-                </div>
-                {/* ARC Hazard Assessment */}
+                </div> */}
                 <div className="border rounded-lg overflow-hidden">
-                  <div className="bg-gray-900 text-white text-center font-semibold py-2">
-                    ARC Hazard Assessment
-                  </div>
+  <div className="bg-gray-900 text-white text-center font-semibold py-2">
+    Shock Hazard Assessment
+  </div>
+  {/* Header Section */}
+<div className="grid grid-cols-4 text-center font-semibold bg-gray-200 border-b">
 
-                  {/* Header row */}
-                  <div className="grid grid-cols-3 text-center font-semibold bg-gray-200 border-b">
-                    <div>Likelihood of Occurrence of Harm</div>
-                    <div className="col-span-2">Severity of Harm</div>
-                  </div>
+{/* Left big column */}
+<div className="col-span-2 flex items-center justify-center border-r">
+  Likelihood of Occurrence of Harm
+</div>
 
-                  {/* Severity values in SAME header row */}
-                  <div className="grid grid-cols-3 text-center font-semibold bg-gray-200 border-b">
-                    <div></div>
-                    <div>&lt;1.2 cal/cm²</div>
-                    <div>&gt;1.2 cal/cm²</div>
-                  </div>
+{/* Severity of Harm – spans 2 columns */}
+<div className="col-span-2">
+  <div className="border-b py-1">Severity of Harm</div>
+  
+  {/* Sub-headings: <30V and >30V */}
+  <div className="grid grid-cols-2">
+    <div className="border-r py-1">&lt;30V</div>
+    <div className="py-1">&gt;30V</div>
+  </div>
+</div>
 
-                  {/* IMPROBABLE row */}
-                  <div className="grid grid-cols-3 text-center border-b">
-                    <div className="font-semibold">IMPROBABLE</div>
-                    <div className="bg-green-300 font-semibold">LOW</div>
-                    <div className="bg-yellow-300 font-semibold">MED</div>
-                  </div>
+</div>
 
-                  {/* POSSIBLE row */}
-                  <div className="grid grid-cols-3 text-center">
-                    <div className="font-semibold">POSSIBLE</div>
-                    <div className="bg-yellow-300 font-semibold">MED</div>
-                    <div className="bg-red-400 font-semibold">HIGH</div>
-                  </div>
-                </div>
+
+
+
+  {/* IMPROBABLE row */}
+  <div className="grid grid-cols-4 text-center border-b">
+    <div className="col-span-2 font-semibold border-r">IMPROBABLE</div>
+    <div className="bg-green-300 font-semibold border-r">LOW</div>
+    <div className="bg-yellow-300 font-semibold">MED</div>
+  </div>
+
+  {/* POSSIBLE row */}
+  <div className="grid grid-cols-4 text-center">
+    <div className="col-span-2 font-semibold border-r">POSSIBLE</div>
+    <div className="bg-green-300 font-semibold border-r">LOW</div>
+    <div className="bg-red-400 font-semibold">HIGH</div>
+  </div>
+</div>
+
+                {/* ARC Hazard Assessment */}
+                
+                <div className="border rounded-lg overflow-hidden">
+  <div className="bg-gray-900 text-white text-center font-semibold py-2">
+    ARC Hazard Assessment
+  </div>
+
+  {/* Header Section */}
+  <div className="grid grid-cols-4 text-center font-semibold bg-gray-200 border-b">
+
+    {/* Left big column */}
+    <div className="col-span-2 flex items-center justify-center border-r">
+      Likelihood of Occurrence of Harm
+    </div>
+
+    {/* Severity of Harm – spans 2 columns */}
+    <div className="col-span-2">
+      <div className="border-b py-1">Severity of Harm</div>
+
+      {/* Sub-headings: <1.2 and >1.2 */}
+      <div className="grid grid-cols-2">
+        <div className="border-r py-1">&lt;1.2 cal/cm²</div>
+        <div className="py-1">&gt;1.2 cal/cm²</div>
+      </div>
+    </div>
+
+  </div>
+
+  {/* IMPROBABLE row */}
+  <div className="grid grid-cols-4 text-center border-b">
+    <div className="col-span-2 font-semibold border-r">IMPROBABLE</div>
+    <div className="bg-green-300 font-semibold border-r">LOW</div>
+    <div className="bg-yellow-300 font-semibold">MED</div>
+  </div>
+
+  {/* POSSIBLE row */}
+  <div className="grid grid-cols-4 text-center">
+    <div className="col-span-2 font-semibold border-r">POSSIBLE</div>
+    <div className="bg-yellow-300 font-semibold border-r">MED</div>
+    <div className="bg-red-400 font-semibold">HIGH</div>
+  </div>
+</div>
+
               </div>
 
               {/* Supervisor Review */}
