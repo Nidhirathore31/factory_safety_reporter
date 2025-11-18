@@ -11,6 +11,7 @@ import NotificationBadge from './components/NotificationBadge';
 import Button from '../../components/ui/Button';
 import Icon from '../../components/AppIcon';
 import HotWorkPermitCard from './components/HotWorkPermitCard';
+import ElectricalPassCard from './components/ElectricalPassCard';
 
 const WorkerDashboard = () => {
   const navigate = useNavigate();
@@ -295,6 +296,7 @@ const WorkerDashboard = () => {
                 />
 
                 <HotWorkPermitCard />
+                <ElectricalPassCard />
               </div>
               
               <div className="text-center text-sm text-muted-foreground">

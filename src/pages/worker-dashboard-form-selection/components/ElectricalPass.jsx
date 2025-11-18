@@ -2,8 +2,54 @@ import React, { useState, useMemo, useEffect } from "react";
 import Header from "components/ui/Header";
 import Sidebar from "components/ui/Sidebar";
 import Input from "components/ui/Input";
+import Select from "components/ui/Select";
+import Button from "components/ui/Button";
+import Icon from "components/AppIcon";
+import { Checkbox } from "components/ui/Checkbox";
+import { useNavigate } from "react-router-dom";
 
 const ElectricalPass = ({ sidebarCollapsed }) => {
+  const [open, setOpen] = useState(false);
+  const [isRiskAssessmentExpanded, setIsRiskAssessmentExpanded] = useState(false);
+  const [shockImprobableExpanded, setShockImprobableExpanded] = useState(false);
+  const [shockPossibleExpanded, setShockPossibleExpanded] = useState(false);
+  const [arcImprobableExpanded, setArcImprobableExpanded] = useState(false);
+  const [arcPossibleExpanded, setArcPossibleExpanded] = useState(false);
+  const [riskAssessmentSelections, setRiskAssessmentSelections] = useState({
+    improbable: false,
+    improbable_controls: {},
+    possible: false,
+    possible_controls: {}
+  });
+  const [shockHazardSelections, setShockHazardSelections] = useState({
+    improbable: {
+      under30v: false,
+      under30v_controls: {},
+      over30v: false,
+      over30v_controls: {}
+    },
+    possible: {
+      under30v: false,
+      under30v_controls: {},
+      over30v: false,
+      over30v_controls: {}
+    }
+  });
+  const [arcHazardSelections, setArcHazardSelections] = useState({
+    improbable: {
+      under12: false,
+      under12_controls: {},
+      over12: false,
+      over12_controls: {}
+    },
+    possible: {
+      under12: false,
+      under12_controls: {},
+      over12: false,
+      over12_controls: {}
+    }
+  });
+
   const [form, setForm] = useState({
     date: "",
     time: "",
@@ -27,13 +73,63 @@ const ElectricalPass = ({ sidebarCollapsed }) => {
     insulation: "",
     voltageTestPerformed: "",
     comments: "",
+    riskAssessment: {
+      improbable: false,
+      improbable_controls: {},
+      possible: false,
+      possible_controls: {}
+    },
+    shockHazard: {
+      improbable: {
+        under30v: false,
+        under30v_controls: {},
+        over30v: false,
+        over30v_controls: {}
+      },
+      possible: {
+        under30v: false,
+        under30v_controls: {},
+        over30v: false,
+        over30v_controls: {}
+      }
+    },
+    arcHazard: {
+      improbable: {
+        under12: false,
+        under12_controls: {},
+        over12: false,
+        over12_controls: {}
+      },
+      possible: {
+        under12: false,
+        under12_controls: {},
+        over12: false,
+        over12_controls: {}
+      }
+    }
   });
+  const navigate = useNavigate()
+  const shiftOptions = [
+    { value: 'day', label: 'Day Shift (6:00 AM - 2:00 PM)' },
+    { value: 'afternoon', label: 'Afternoon Shift (2:00 PM - 10:00 PM)' },
+    { value: 'night', label: 'Night Shift (10:00 PM - 6:00 AM)' }
+  ];
 
   useEffect(() => {
     const saved = localStorage.getItem("electrical-pass-form");
     if (saved) {
       try {
-        setForm((prev) => ({ ...prev, ...JSON.parse(saved) }));
+        const parsed = JSON.parse(saved);
+        setForm((prev) => ({ ...prev, ...parsed }));
+        if (parsed.riskAssessment) {
+          setRiskAssessmentSelections(parsed.riskAssessment);
+        }
+        if (parsed.shockHazard) {
+          setShockHazardSelections(parsed.shockHazard);
+        }
+        if (parsed.arcHazard) {
+          setArcHazardSelections(parsed.arcHazard);
+        }
       } catch (err) {
         console.error("Failed to parse saved electrical pass form", err);
       }
@@ -93,6 +189,19 @@ const ElectricalPass = ({ sidebarCollapsed }) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("Form Submitted:",form);
+    navigate("/worker-dashboard-form-selection");
+  };
+
+  const handleShiftChange =(field,value)=>{
+    setForm(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  }
+  
 
   const equipmentList = useMemo(
     () => [
@@ -180,13 +289,25 @@ const ElectricalPass = ({ sidebarCollapsed }) => {
                   onChange={handleChange}
                   placeholder="Enter time"
                 />
-                <Input
+                {/* <Input
                   label="Shift"
                   name="shift"
                   value={form.shift}
                   onChange={handleChange}
                   placeholder="Enter shift"
-                />
+                /> */}
+                <Select
+          label="Shift"
+          name="shift"
+          options={shiftOptions}
+          value={form?.shift || ''}
+          // onChange={}
+          onChange={(value) => handleShiftChange('shift', value)}
+          // error={errors?.shift}
+          required
+          placeholder="Select shift"
+          className="col-span-1"
+        />
               </div>
 
               <Input
@@ -690,171 +811,797 @@ const ElectricalPass = ({ sidebarCollapsed }) => {
               </p>
             </div>
             {/* risk assesment */}
-            <div className="bg-white shadow rounded-2xl p-6 mb-6">
-              {/* Heading */}
-              <h3 className="text-xl font-semibold text-center mb-4">
-                Risk Assessment
-              </h3>
+            <div className="bg-white shadow rounded-2xl mb-6">
+              {/* Accordion Header */}
+              <button
+                onClick={() => setIsRiskAssessmentExpanded(!isRiskAssessmentExpanded)}
+                className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+              >
+                <h3 className="text-xl font-semibold text-gray-900">
+                  Risk Assessment
+                </h3>
+                <Icon 
+                  name={isRiskAssessmentExpanded ? 'ChevronUp' : 'ChevronDown'} 
+                  size={20} 
+                  className="text-gray-400"
+                />
+              </button>
 
-              {/* Risk Probability Table */}
-              <div className="border rounded-lg overflow-hidden">
-                <div className="grid grid-cols-2 text-center font-semibold bg-gray-900 text-white py-2">
-                  <div>IMPROBABLE</div>
-                  <div>POSSIBLE</div>
-                </div>
+              {/* Accordion Content */}
+              {isRiskAssessmentExpanded && (
+                <div className="px-6 pb-6 border-t border-gray-100">
+                  <div className="mt-4 space-y-4">
+                    {/* Improbable Hazard Card */}
+                    <div className="border border-gray-200 rounded-lg p-4">
+                      <div className="flex items-start space-x-3">
+                        <Checkbox
+                          checked={riskAssessmentSelections.improbable || false}
+                          onChange={(e) => {
+                            const updated = {
+                              ...riskAssessmentSelections,
+                              improbable: e.target.checked
+                            };
+                            setRiskAssessmentSelections(updated);
+                            setForm(prev => ({ ...prev, riskAssessment: updated }));
+                          }}
+                          className="mt-1"
+                        />
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-2">
+                            <h4 className="font-medium text-gray-900">IMPROBABLE</h4>
+                            <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">
+                              LOW
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-600 mt-1">
+                            Source of harm adequately guarded to avoid contact with hazardous energy.
+                          </p>
+                          
+                          {riskAssessmentSelections.improbable && (
+                            <div className="mt-4 pl-4 border-l-2 border-blue-200">
+                              <h5 className="font-medium text-gray-900 mb-2">Required Control Measures:</h5>
+                              <div className="space-y-2">
+                                <div className="flex items-start space-x-2">
+                                  <Checkbox
+                                    checked={riskAssessmentSelections.improbable_controls?.low || false}
+                                    onChange={(e) => {
+                                      const updated = {
+                                        ...riskAssessmentSelections,
+                                        improbable_controls: {
+                                          ...riskAssessmentSelections.improbable_controls,
+                                          low: e.target.checked
+                                        }
+                                      };
+                                      setRiskAssessmentSelections(updated);
+                                      setForm(prev => ({ ...prev, riskAssessment: updated }));
+                                    }}
+                                    size="sm"
+                                  />
+                                  <label className="text-sm text-gray-700">Low</label>
+                                </div>
+                                <div className="flex items-start space-x-2">
+                                  <Checkbox
+                                    checked={riskAssessmentSelections.improbable_controls?.medium || false}
+                                    onChange={(e) => {
+                                      const updated = {
+                                        ...riskAssessmentSelections,
+                                        improbable_controls: {
+                                          ...riskAssessmentSelections.improbable_controls,
+                                          medium: e.target.checked
+                                        }
+                                      };
+                                      setRiskAssessmentSelections(updated);
+                                      setForm(prev => ({ ...prev, riskAssessment: updated }));
+                                    }}
+                                    size="sm"
+                                  />
+                                  <label className="text-sm text-gray-700">Medium</label>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
 
-                <div className="grid grid-cols-2 text-center border-b">
-                  <div className="p-2 text-sm">
-                    Source of harm adequately guarded to avoid contact with
-                    hazardous energy.
+                    {/* Possible Hazard Card */}
+                    <div className="border border-gray-200 rounded-lg p-4">
+                      <div className="flex items-start space-x-3">
+                        <Checkbox
+                          checked={riskAssessmentSelections.possible || false}
+                          onChange={(e) => {
+                            const updated = {
+                              ...riskAssessmentSelections,
+                              possible: e.target.checked
+                            };
+                            setRiskAssessmentSelections(updated);
+                            setForm(prev => ({ ...prev, riskAssessment: updated }));
+                          }}
+                          className="mt-1"
+                        />
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-2">
+                            <h4 className="font-medium text-gray-900">POSSIBLE</h4>
+                            <span className="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-700">
+                              MEDIUM
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-600 mt-1">
+                            Source of harm not adequately guarded to avoid contact with hazardous energy.
+                          </p>
+                          
+                          {riskAssessmentSelections.possible && (
+                            <div className="mt-4 pl-4 border-l-2 border-blue-200">
+                              <h5 className="font-medium text-gray-900 mb-2">Required Control Measures:</h5>
+                              <div className="space-y-2">
+                                <div className="flex items-start space-x-2">
+                                  <Checkbox
+                                    checked={riskAssessmentSelections.possible_controls?.low || false}
+                                    onChange={(e) => {
+                                      const updated = {
+                                        ...riskAssessmentSelections,
+                                        possible_controls: {
+                                          ...riskAssessmentSelections.possible_controls,
+                                          low: e.target.checked
+                                        }
+                                      };
+                                      setRiskAssessmentSelections(updated);
+                                      setForm(prev => ({ ...prev, riskAssessment: updated }));
+                                    }}
+                                    size="sm"
+                                  />
+                                  <label className="text-sm text-gray-700">Low</label>
+                                </div>
+                                <div className="flex items-start space-x-2">
+                                  <Checkbox
+                                    checked={riskAssessmentSelections.possible_controls?.medium || false}
+                                    onChange={(e) => {
+                                      const updated = {
+                                        ...riskAssessmentSelections,
+                                        possible_controls: {
+                                          ...riskAssessmentSelections.possible_controls,
+                                          medium: e.target.checked
+                                        }
+                                      };
+                                      setRiskAssessmentSelections(updated);
+                                      setForm(prev => ({ ...prev, riskAssessment: updated }));
+                                    }}
+                                    size="sm"
+                                  />
+                                  <label className="text-sm text-gray-700">Medium</label>
+                                </div>
+                                <div className="flex items-start space-x-2">
+                                  <Checkbox
+                                    checked={riskAssessmentSelections.possible_controls?.high || false}
+                                    onChange={(e) => {
+                                      const updated = {
+                                        ...riskAssessmentSelections,
+                                        possible_controls: {
+                                          ...riskAssessmentSelections.possible_controls,
+                                          high: e.target.checked
+                                        }
+                                      };
+                                      setRiskAssessmentSelections(updated);
+                                      setForm(prev => ({ ...prev, riskAssessment: updated }));
+                                    }}
+                                    size="sm"
+                                  />
+                                  <label className="text-sm text-gray-700">High</label>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="p-2 text-sm">
-                    Source of harm not adequately guarded to avoid contact with
-                    hazardous energy.
+              
+              {/* Shock & Arc Flash Assessment */}
+              <div className="mt-6">
+                <h4 className="text-lg font-semibold text-gray-900 mb-4">Shock Hazard Assessment</h4>
+                <div className="space-y-4">
+                  {/* IMPROBABLE */}
+                  <div className="border border-gray-200 rounded-lg p-4">
+                    <div className="flex items-start space-x-3">
+                      <Checkbox
+                        checked={shockImprobableExpanded}
+                        onChange={(e) => {
+                          setShockImprobableExpanded(e.target.checked);
+                          if (!e.target.checked) {
+                            // Uncheck all nested options when main checkbox is unchecked
+                            const updated = {
+                              ...shockHazardSelections,
+                              improbable: {
+                                under30v: false,
+                                under30v_controls: {},
+                                over30v: false,
+                                over30v_controls: {}
+                              }
+                            };
+                            setShockHazardSelections(updated);
+                            setForm(prev => ({ ...prev, shockHazard: updated }));
+                          }
+                        }}
+                        className="mt-1"
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2">
+                          <h4 className="font-medium text-gray-900">IMPROBABLE</h4>
+                        </div>
+                        <p className="text-sm text-gray-600 mt-1">
+                          Source of harm adequately guarded to avoid contact with hazardous energy.
+                        </p>
+                        
+                        {shockImprobableExpanded && (
+                          <div className="mt-4 space-y-3">
+                          {/* <30V Option */}
+                          <div className="pl-4 border-l-2 border-blue-200">
+                            <div className="flex items-start space-x-2 mb-2">
+                              <Checkbox
+                                checked={shockHazardSelections.improbable?.under30v || false}
+                                onChange={(e) => {
+                                  const updated = {
+                                    ...shockHazardSelections,
+                                    improbable: {
+                                      ...shockHazardSelections.improbable,
+                                      under30v: e.target.checked
+                                    }
+                                  };
+                                  setShockHazardSelections(updated);
+                                  setForm(prev => ({ ...prev, shockHazard: updated }));
+                                }}
+                                size="sm"
+                              />
+                              <div className="flex items-center space-x-2">
+                                <label className="text-sm font-medium text-gray-900">&lt;30V</label>
+                                <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">
+                                  LOW
+                                </span>
+                              </div>
+                            </div>
+                            {shockHazardSelections.improbable?.under30v && (
+                              <div className="ml-6 mt-2">
+                                <h5 className="font-medium text-gray-900 mb-2 text-sm">Required Control Measures:</h5>
+                                <div className="space-y-2">
+                                  <div className="flex items-start space-x-2">
+                                    <Checkbox
+                                      checked={shockHazardSelections.improbable?.under30v_controls?.low || false}
+                                      onChange={(e) => {
+                                        const updated = {
+                                          ...shockHazardSelections,
+                                          improbable: {
+                                            ...shockHazardSelections.improbable,
+                                            under30v_controls: {
+                                              ...shockHazardSelections.improbable?.under30v_controls,
+                                              low: e.target.checked
+                                            }
+                                          }
+                                        };
+                                        setShockHazardSelections(updated);
+                                        setForm(prev => ({ ...prev, shockHazard: updated }));
+                                      }}
+                                      size="sm"
+                                    />
+                                    <label className="text-sm text-gray-700">Low</label>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* >30V Option */}
+                          <div className="pl-4 border-l-2 border-blue-200">
+                            <div className="flex items-start space-x-2 mb-2">
+                              <Checkbox
+                                checked={shockHazardSelections.improbable?.over30v || false}
+                                onChange={(e) => {
+                                  const updated = {
+                                    ...shockHazardSelections,
+                                    improbable: {
+                                      ...shockHazardSelections.improbable,
+                                      over30v: e.target.checked
+                                    }
+                                  };
+                                  setShockHazardSelections(updated);
+                                  setForm(prev => ({ ...prev, shockHazard: updated }));
+                                }}
+                                size="sm"
+                              />
+                              <div className="flex items-center space-x-2">
+                                <label className="text-sm font-medium text-gray-900">&gt;30V</label>
+                                <span className="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-700">
+                                  MED
+                                </span>
+                              </div>
+                            </div>
+                            {shockHazardSelections.improbable?.over30v && (
+                              <div className="ml-6 mt-2">
+                                <h5 className="font-medium text-gray-900 mb-2 text-sm">Required Control Measures:</h5>
+                                <div className="space-y-2">
+                                  <div className="flex items-start space-x-2">
+                                    <Checkbox
+                                      checked={shockHazardSelections.improbable?.over30v_controls?.medium || false}
+                                      onChange={(e) => {
+                                        const updated = {
+                                          ...shockHazardSelections,
+                                          improbable: {
+                                            ...shockHazardSelections.improbable,
+                                            over30v_controls: {
+                                              ...shockHazardSelections.improbable?.over30v_controls,
+                                              medium: e.target.checked
+                                            }
+                                          }
+                                        };
+                                        setShockHazardSelections(updated);
+                                        setForm(prev => ({ ...prev, shockHazard: updated }));
+                                      }}
+                                      size="sm"
+                                    />
+                                    <label className="text-sm text-gray-700">Medium</label>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                </div>
 
-                {/* LOW */}
-                <div className="bg-green-300 p-2 text-sm font-semibold border-b">
-                  LOW: Implement Hierarchy of Risk Control Methods on a
-                  discretionary basis.
-                </div>
+                  {/* POSSIBLE */}
+                  <div className="border border-gray-200 rounded-lg p-4">
+                    <div className="flex items-start space-x-3">
+                      <Checkbox
+                        checked={shockPossibleExpanded}
+                        onChange={(e) => {
+                          setShockPossibleExpanded(e.target.checked);
+                          if (!e.target.checked) {
+                            // Uncheck all nested options when main checkbox is unchecked
+                            const updated = {
+                              ...shockHazardSelections,
+                              possible: {
+                                under30v: false,
+                                under30v_controls: {},
+                                over30v: false,
+                                over30v_controls: {}
+                              }
+                            };
+                            setShockHazardSelections(updated);
+                            setForm(prev => ({ ...prev, shockHazard: updated }));
+                          }
+                        }}
+                        className="mt-1"
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2">
+                          <h4 className="font-medium text-gray-900">POSSIBLE</h4>
+                        </div>
+                        <p className="text-sm text-gray-600 mt-1">
+                          Source of harm not adequately guarded to avoid contact with hazardous energy.
+                        </p>
+                        
+                        {shockPossibleExpanded && (
+                          <div className="mt-4 space-y-3">
+                          {/* <30V Option */}
+                          <div className="pl-4 border-l-2 border-blue-200">
+                            <div className="flex items-start space-x-2 mb-2">
+                              <Checkbox
+                                checked={shockHazardSelections.possible?.under30v || false}
+                                onChange={(e) => {
+                                  const updated = {
+                                    ...shockHazardSelections,
+                                    possible: {
+                                      ...shockHazardSelections.possible,
+                                      under30v: e.target.checked
+                                    }
+                                  };
+                                  setShockHazardSelections(updated);
+                                  setForm(prev => ({ ...prev, shockHazard: updated }));
+                                }}
+                                size="sm"
+                              />
+                              <div className="flex items-center space-x-2">
+                                <label className="text-sm font-medium text-gray-900">&lt;30V</label>
+                                <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">
+                                  LOW
+                                </span>
+                              </div>
+                            </div>
+                            {shockHazardSelections.possible?.under30v && (
+                              <div className="ml-6 mt-2">
+                                <h5 className="font-medium text-gray-900 mb-2 text-sm">Required Control Measures:</h5>
+                                <div className="space-y-2">
+                                  <div className="flex items-start space-x-2">
+                                    <Checkbox
+                                      checked={shockHazardSelections.possible?.under30v_controls?.low || false}
+                                      onChange={(e) => {
+                                        const updated = {
+                                          ...shockHazardSelections,
+                                          possible: {
+                                            ...shockHazardSelections.possible,
+                                            under30v_controls: {
+                                              ...shockHazardSelections.possible?.under30v_controls,
+                                              low: e.target.checked
+                                            }
+                                          }
+                                        };
+                                        setShockHazardSelections(updated);
+                                        setForm(prev => ({ ...prev, shockHazard: updated }));
+                                      }}
+                                      size="sm"
+                                    />
+                                    <label className="text-sm text-gray-700">Low</label>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
 
-                {/* MEDIUM */}
-                <div className="bg-yellow-300 p-2 text-sm font-semibold border-b">
-                  MEDIUM: Implement Hierarchy of Risk Control Methods to reduce
-                  possibility of occurrence, severity of harm or both.
-                </div>
-
-                {/* HIGH */}
-                <div className="bg-red-400 p-2 text-sm font-semibold">
-                  HIGH: Use of multiple risk control methods required prior to
-                  commencing work to reduce possibility of occurrence, severity
-                  of harm or both.
+                          {/* >30V Option */}
+                          <div className="pl-4 border-l-2 border-blue-200">
+                            <div className="flex items-start space-x-2 mb-2">
+                              <Checkbox
+                                checked={shockHazardSelections.possible?.over30v || false}
+                                onChange={(e) => {
+                                  const updated = {
+                                    ...shockHazardSelections,
+                                    possible: {
+                                      ...shockHazardSelections.possible,
+                                      over30v: e.target.checked
+                                    }
+                                  };
+                                  setShockHazardSelections(updated);
+                                  setForm(prev => ({ ...prev, shockHazard: updated }));
+                                }}
+                                size="sm"
+                              />
+                              <div className="flex items-center space-x-2">
+                                <label className="text-sm font-medium text-gray-900">&gt;30V</label>
+                                <span className="px-2 py-1 text-xs rounded-full bg-red-100 text-red-700">
+                                  HIGH
+                                </span>
+                              </div>
+                            </div>
+                            {shockHazardSelections.possible?.over30v && (
+                              <div className="ml-6 mt-2">
+                                <h5 className="font-medium text-gray-900 mb-2 text-sm">Required Control Measures:</h5>
+                                <div className="space-y-2">
+                                  <div className="flex items-start space-x-2">
+                                    <Checkbox
+                                      checked={shockHazardSelections.possible?.over30v_controls?.high || false}
+                                      onChange={(e) => {
+                                        const updated = {
+                                          ...shockHazardSelections,
+                                          possible: {
+                                            ...shockHazardSelections.possible,
+                                            over30v_controls: {
+                                              ...shockHazardSelections.possible?.over30v_controls,
+                                              high: e.target.checked
+                                            }
+                                          }
+                                        };
+                                        setShockHazardSelections(updated);
+                                        setForm(prev => ({ ...prev, shockHazard: updated }));
+                                      }}
+                                      size="sm"
+                                    />
+                                    <label className="text-sm text-gray-700">High</label>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              {/* Shock & Arc Flash Assessment */}
-              <div className="grid grid-cols-2 gap-4 mt-6">
-                {/* Shock Hazard Assessment */}
-                {/* <div className="border rounded-lg overflow-hidden">
-                  <div className="bg-gray-900 text-white text-center font-semibold py-2">
-                    Shock Hazard Assessment
+              {/* ARC Hazard Assessment */}
+              <div className="mt-6">
+                <h4 className="text-lg font-semibold text-gray-900 mb-4">ARC Hazard Assessment</h4>
+                <div className="space-y-4">
+                  {/* IMPROBABLE */}
+                  <div className="border border-gray-200 rounded-lg p-4">
+                    <div className="flex items-start space-x-3">
+                      <Checkbox
+                        checked={arcImprobableExpanded}
+                        onChange={(e) => {
+                          setArcImprobableExpanded(e.target.checked);
+                          if (!e.target.checked) {
+                            // Uncheck all nested options when main checkbox is unchecked
+                            const updated = {
+                              ...arcHazardSelections,
+                              improbable: {
+                                under12: false,
+                                under12_controls: {},
+                                over12: false,
+                                over12_controls: {}
+                              }
+                            };
+                            setArcHazardSelections(updated);
+                            setForm(prev => ({ ...prev, arcHazard: updated }));
+                          }
+                        }}
+                        className="mt-1"
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2">
+                          <h4 className="font-medium text-gray-900">IMPROBABLE</h4>
+                        </div>
+                        <p className="text-sm text-gray-600 mt-1">
+                          Source of harm adequately guarded to avoid contact with hazardous energy.
+                        </p>
+                        
+                        {arcImprobableExpanded && (
+                          <div className="mt-4 space-y-3">
+                          {/* <1.2 cal/cm² Option */}
+                          <div className="pl-4 border-l-2 border-blue-200">
+                            <div className="flex items-start space-x-2 mb-2">
+                              <Checkbox
+                                checked={arcHazardSelections.improbable?.under12 || false}
+                                onChange={(e) => {
+                                  const updated = {
+                                    ...arcHazardSelections,
+                                    improbable: {
+                                      ...arcHazardSelections.improbable,
+                                      under12: e.target.checked
+                                    }
+                                  };
+                                  setArcHazardSelections(updated);
+                                  setForm(prev => ({ ...prev, arcHazard: updated }));
+                                }}
+                                size="sm"
+                              />
+                              <div className="flex items-center space-x-2">
+                                <label className="text-sm font-medium text-gray-900">&lt;1.2 cal/cm²</label>
+                                <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">
+                                  LOW
+                                </span>
+                              </div>
+                            </div>
+                            {arcHazardSelections.improbable?.under12 && (
+                              <div className="ml-6 mt-2">
+                                <h5 className="font-medium text-gray-900 mb-2 text-sm">Required Control Measures:</h5>
+                                <div className="space-y-2">
+                                  <div className="flex items-start space-x-2">
+                                    <Checkbox
+                                      checked={arcHazardSelections.improbable?.under12_controls?.low || false}
+                                      onChange={(e) => {
+                                        const updated = {
+                                          ...arcHazardSelections,
+                                          improbable: {
+                                            ...arcHazardSelections.improbable,
+                                            under12_controls: {
+                                              ...arcHazardSelections.improbable?.under12_controls,
+                                              low: e.target.checked
+                                            }
+                                          }
+                                        };
+                                        setArcHazardSelections(updated);
+                                        setForm(prev => ({ ...prev, arcHazard: updated }));
+                                      }}
+                                      size="sm"
+                                    />
+                                    <label className="text-sm text-gray-700">Low</label>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* >1.2 cal/cm² Option */}
+                          <div className="pl-4 border-l-2 border-blue-200">
+                            <div className="flex items-start space-x-2 mb-2">
+                              <Checkbox
+                                checked={arcHazardSelections.improbable?.over12 || false}
+                                onChange={(e) => {
+                                  const updated = {
+                                    ...arcHazardSelections,
+                                    improbable: {
+                                      ...arcHazardSelections.improbable,
+                                      over12: e.target.checked
+                                    }
+                                  };
+                                  setArcHazardSelections(updated);
+                                  setForm(prev => ({ ...prev, arcHazard: updated }));
+                                }}
+                                size="sm"
+                              />
+                              <div className="flex items-center space-x-2">
+                                <label className="text-sm font-medium text-gray-900">&gt;1.2 cal/cm²</label>
+                                <span className="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-700">
+                                  MED
+                                </span>
+                              </div>
+                            </div>
+                            {arcHazardSelections.improbable?.over12 && (
+                              <div className="ml-6 mt-2">
+                                <h5 className="font-medium text-gray-900 mb-2 text-sm">Required Control Measures:</h5>
+                                <div className="space-y-2">
+                                  <div className="flex items-start space-x-2">
+                                    <Checkbox
+                                      checked={arcHazardSelections.improbable?.over12_controls?.medium || false}
+                                      onChange={(e) => {
+                                        const updated = {
+                                          ...arcHazardSelections,
+                                          improbable: {
+                                            ...arcHazardSelections.improbable,
+                                            over12_controls: {
+                                              ...arcHazardSelections.improbable?.over12_controls,
+                                              medium: e.target.checked
+                                            }
+                                          }
+                                        };
+                                        setArcHazardSelections(updated);
+                                        setForm(prev => ({ ...prev, arcHazard: updated }));
+                                      }}
+                                      size="sm"
+                                    />
+                                    <label className="text-sm text-gray-700">Medium</label>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
 
-                  
-                  <div className="grid grid-cols-3 text-center font-semibold bg-gray-200 border-b">
-                    <div>Likelihood of Occurrence of Harm</div>
-                    <div className="col-span-2">Severity of Harm</div>
+                  {/* POSSIBLE */}
+                  <div className="border border-gray-200 rounded-lg p-4">
+                    <div className="flex items-start space-x-3">
+                      <Checkbox
+                        checked={arcPossibleExpanded}
+                        onChange={(e) => {
+                          setArcPossibleExpanded(e.target.checked);
+                          if (!e.target.checked) {
+                            // Uncheck all nested options when main checkbox is unchecked
+                            const updated = {
+                              ...arcHazardSelections,
+                              possible: {
+                                under12: false,
+                                under12_controls: {},
+                                over12: false,
+                                over12_controls: {}
+                              }
+                            };
+                            setArcHazardSelections(updated);
+                            setForm(prev => ({ ...prev, arcHazard: updated }));
+                          }
+                        }}
+                        className="mt-1"
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2">
+                          <h4 className="font-medium text-gray-900">POSSIBLE</h4>
+                        </div>
+                        <p className="text-sm text-gray-600 mt-1">
+                          Source of harm not adequately guarded to avoid contact with hazardous energy.
+                        </p>
+                        
+                        {arcPossibleExpanded && (
+                          <div className="mt-4 space-y-3">
+                          {/* <1.2 cal/cm² Option */}
+                          <div className="pl-4 border-l-2 border-blue-200">
+                            <div className="flex items-start space-x-2 mb-2">
+                              <Checkbox
+                                checked={arcHazardSelections.possible?.under12 || false}
+                                onChange={(e) => {
+                                  const updated = {
+                                    ...arcHazardSelections,
+                                    possible: {
+                                      ...arcHazardSelections.possible,
+                                      under12: e.target.checked
+                                    }
+                                  };
+                                  setArcHazardSelections(updated);
+                                  setForm(prev => ({ ...prev, arcHazard: updated }));
+                                }}
+                                size="sm"
+                              />
+                              <div className="flex items-center space-x-2">
+                                <label className="text-sm font-medium text-gray-900">&lt;1.2 cal/cm²</label>
+                                <span className="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-700">
+                                  MED
+                                </span>
+                              </div>
+                            </div>
+                            {arcHazardSelections.possible?.under12 && (
+                              <div className="ml-6 mt-2">
+                                <h5 className="font-medium text-gray-900 mb-2 text-sm">Required Control Measures:</h5>
+                                <div className="space-y-2">
+                                  <div className="flex items-start space-x-2">
+                                    <Checkbox
+                                      checked={arcHazardSelections.possible?.under12_controls?.medium || false}
+                                      onChange={(e) => {
+                                        const updated = {
+                                          ...arcHazardSelections,
+                                          possible: {
+                                            ...arcHazardSelections.possible,
+                                            under12_controls: {
+                                              ...arcHazardSelections.possible?.under12_controls,
+                                              medium: e.target.checked
+                                            }
+                                          }
+                                        };
+                                        setArcHazardSelections(updated);
+                                        setForm(prev => ({ ...prev, arcHazard: updated }));
+                                      }}
+                                      size="sm"
+                                    />
+                                    <label className="text-sm text-gray-700">Medium</label>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* >1.2 cal/cm² Option */}
+                          <div className="pl-4 border-l-2 border-blue-200">
+                            <div className="flex items-start space-x-2 mb-2">
+                              <Checkbox
+                                checked={arcHazardSelections.possible?.over12 || false}
+                                onChange={(e) => {
+                                  const updated = {
+                                    ...arcHazardSelections,
+                                    possible: {
+                                      ...arcHazardSelections.possible,
+                                      over12: e.target.checked
+                                    }
+                                  };
+                                  setArcHazardSelections(updated);
+                                  setForm(prev => ({ ...prev, arcHazard: updated }));
+                                }}
+                                size="sm"
+                              />
+                              <div className="flex items-center space-x-2">
+                                <label className="text-sm font-medium text-gray-900">&gt;1.2 cal/cm²</label>
+                                <span className="px-2 py-1 text-xs rounded-full bg-red-100 text-red-700">
+                                  HIGH
+                                </span>
+                              </div>
+                            </div>
+                            {arcHazardSelections.possible?.over12 && (
+                              <div className="ml-6 mt-2">
+                                <h5 className="font-medium text-gray-900 mb-2 text-sm">Required Control Measures:</h5>
+                                <div className="space-y-2">
+                                  <div className="flex items-start space-x-2">
+                                    <Checkbox
+                                      checked={arcHazardSelections.possible?.over12_controls?.high || false}
+                                      onChange={(e) => {
+                                        const updated = {
+                                          ...arcHazardSelections,
+                                          possible: {
+                                            ...arcHazardSelections.possible,
+                                            over12_controls: {
+                                              ...arcHazardSelections.possible?.over12_controls,
+                                              high: e.target.checked
+                                            }
+                                          }
+                                        };
+                                        setArcHazardSelections(updated);
+                                        setForm(prev => ({ ...prev, arcHazard: updated }));
+                                      }}
+                                      size="sm"
+                                    />
+                                    <label className="text-sm text-gray-700">High</label>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
-
-                 
-                  <div className="grid grid-cols-3 text-center font-semibold bg-gray-200 border-b">
-                    <div></div>
-                    <div>&lt;30V</div>
-                    <div>&gt;30V</div>
-                  </div>
-
-                 
-                  <div className="grid grid-cols-3 text-center border-b">
-                    <div className="font-semibold">IMPROBABLE</div>
-                    <div className="bg-green-300 font-semibold">LOW</div>
-                    <div className="bg-yellow-300 font-semibold">MED</div>
-                  </div>
-
-                 
-                  <div className="grid grid-cols-3 text-center">
-                    <div className="font-semibold">POSSIBLE</div>
-                    <div className="bg-green-300 font-semibold">LOW</div>
-                    <div className="bg-red-400 font-semibold">HIGH</div>
-                  </div>
-                </div> */}
-                <div className="border rounded-lg overflow-hidden">
-  <div className="bg-gray-900 text-white text-center font-semibold py-2">
-    Shock Hazard Assessment
-  </div>
-  {/* Header Section */}
-<div className="grid grid-cols-4 text-center font-semibold bg-gray-200 border-b">
-
-{/* Left big column */}
-<div className="col-span-2 flex items-center justify-center border-r">
-  Likelihood of Occurrence of Harm
-</div>
-
-{/* Severity of Harm – spans 2 columns */}
-<div className="col-span-2">
-  <div className="border-b py-1">Severity of Harm</div>
-  
-  {/* Sub-headings: <30V and >30V */}
-  <div className="grid grid-cols-2">
-    <div className="border-r py-1">&lt;30V</div>
-    <div className="py-1">&gt;30V</div>
-  </div>
-</div>
-
-</div>
-
-
-
-
-  {/* IMPROBABLE row */}
-  <div className="grid grid-cols-4 text-center border-b">
-    <div className="col-span-2 font-semibold border-r">IMPROBABLE</div>
-    <div className="bg-green-300 font-semibold border-r">LOW</div>
-    <div className="bg-yellow-300 font-semibold">MED</div>
-  </div>
-
-  {/* POSSIBLE row */}
-  <div className="grid grid-cols-4 text-center">
-    <div className="col-span-2 font-semibold border-r">POSSIBLE</div>
-    <div className="bg-green-300 font-semibold border-r">LOW</div>
-    <div className="bg-red-400 font-semibold">HIGH</div>
-  </div>
-</div>
-
-                {/* ARC Hazard Assessment */}
-                
-                <div className="border rounded-lg overflow-hidden">
-  <div className="bg-gray-900 text-white text-center font-semibold py-2">
-    ARC Hazard Assessment
-  </div>
-
-  {/* Header Section */}
-  <div className="grid grid-cols-4 text-center font-semibold bg-gray-200 border-b">
-
-    {/* Left big column */}
-    <div className="col-span-2 flex items-center justify-center border-r">
-      Likelihood of Occurrence of Harm
-    </div>
-
-    {/* Severity of Harm – spans 2 columns */}
-    <div className="col-span-2">
-      <div className="border-b py-1">Severity of Harm</div>
-
-      {/* Sub-headings: <1.2 and >1.2 */}
-      <div className="grid grid-cols-2">
-        <div className="border-r py-1">&lt;1.2 cal/cm²</div>
-        <div className="py-1">&gt;1.2 cal/cm²</div>
-      </div>
-    </div>
-
-  </div>
-
-  {/* IMPROBABLE row */}
-  <div className="grid grid-cols-4 text-center border-b">
-    <div className="col-span-2 font-semibold border-r">IMPROBABLE</div>
-    <div className="bg-green-300 font-semibold border-r">LOW</div>
-    <div className="bg-yellow-300 font-semibold">MED</div>
-  </div>
-
-  {/* POSSIBLE row */}
-  <div className="grid grid-cols-4 text-center">
-    <div className="col-span-2 font-semibold border-r">POSSIBLE</div>
-    <div className="bg-yellow-300 font-semibold border-r">MED</div>
-    <div className="bg-red-400 font-semibold">HIGH</div>
-  </div>
-</div>
-
+                </div>
               </div>
 
               {/* Supervisor Review */}
@@ -880,10 +1627,23 @@ const ElectricalPass = ({ sidebarCollapsed }) => {
                   rows="3"
                 ></textarea>
               </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
+      <div className="flex justify-center mt-6">
+            <Button
+              type="submit"
+              onClick={handleSubmit}
+              variant="primary"
+              size="lg"
+              className="bg-primary text-primary-foreground px-6 py-3 rounded-lg"
+            >
+              Submit
+            </Button>
+          </div>
     </div>
   );
 };

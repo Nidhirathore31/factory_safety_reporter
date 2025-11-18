@@ -60,23 +60,27 @@ const CompletionSidebar = ({
           key?.startsWith('fall') || key?.startsWith('combustible')
         );
         if (hasHazardSelections) completed++;
+        console.log(hasHazardSelections,"hasHazardSelections")
       } else if (field === 'inspectionCategories') {
         const hasInspactionSelections = Object.keys(formData)?.some(key => 
           key?.startsWith('ppe') || key?.startsWith('work_area') || key?.startsWith('standing_surface') ||
           key?.startsWith('tools') || key?.startsWith('equipment') || key?.startsWith('permits')
         );
         if (hasInspactionSelections) completed++;
+        console.log(hasInspactionSelections,"hasInspactionSelections")
       } else if (field === 'inspectionChecklist') {
         // Check if inspection checklist has some answers
         const hasInspectionAnswers = formData?.inspectionChecklist && 
           Object.keys(formData?.inspectionChecklist)?.length > 0;
         if (hasInspectionAnswers) completed++;
+        console.log(hasInspectionAnswers,"hasInspectionAnswers")
       } else if (field === 'spv') {
         // Check SPV section completion
         const spvData = formData?.spv || {};
         const hasRequiredSpvFields = spvData?.spvName && spvData?.spvEmployeeId && 
           spvData?.signature && spvData?.criticalQuestions;
         if (hasRequiredSpvFields) completed++;
+        console.log(hasRequiredSpvFields,"hasRequiredSpvFields")
       } else {
         // Regular field check
         if (formData?.[field]) completed++;

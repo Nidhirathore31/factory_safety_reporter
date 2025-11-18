@@ -659,13 +659,13 @@ const PreJobSafetySurveyForm = () => {
           </div>
 
           {/* Completion Sidebar */}
-          {/* <CompletionSidebar
+          <CompletionSidebar
             formData={formData}
             errors={errors}
             onSubmit={handleSubmit}
             isSubmitting={isSubmitting}
             formType={formType}
-          /> */}
+          />
         </div>
       </div>
     </div>
