@@ -1,0 +1,80 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Background Colors */
+    --color-background: #FAFAFA; /* gray-50 */
+    --color-foreground: #212121; /* gray-800 */
+    --color-card: #FFFFFF; /* white */
+    --color-card-foreground: #212121; /* gray-800 */
+    --color-popover: #FFFFFF; /* white */
+    --color-popover-foreground: #212121; /* gray-800 */
+    --color-muted: #F5F5F5; /* gray-100 */
+    --color-muted-foreground: #616161; /* gray-600 */
+    
+    /* Border and Input */
+    --color-border: #E0E0E0; /* gray-300 */
+    --color-input: #FFFFFF; /* white */
+    --color-ring: #1565C0; /* blue-700 */
+    
+    /* Brand Colors */
+    --color-primary: #2E7D32; /* green-800 */
+    --color-primary-foreground: #FFFFFF; /* white */
+    --color-secondary: #E65100; /* orange-800 */
+    --color-secondary-foreground: #FFFFFF; /* white */
+    --color-accent: #1565C0; /* blue-700 */
+    --color-accent-foreground: #FFFFFF; /* white */
+    
+    /* Status Colors */
+    --color-success: #388E3C; /* green-700 */
+    --color-success-foreground: #FFFFFF; /* white */
+    --color-warning: #F57C00; /* orange-600 */
+    --color-warning-foreground: #FFFFFF; /* white */
+    --color-error: #D32F2F; /* red-700 */
+    --color-error-foreground: #FFFFFF; /* white */
+    --color-destructive: #D32F2F; /* red-700 */
+    --color-destructive-foreground: #FFFFFF; /* white */
+    
+    /* Text Colors */
+    --color-text-primary: #212121; /* gray-800 */
+    --color-text-secondary: #616161; /* gray-600 */
+    
+    /* Radius */
+    --radius: 0.5rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', sans-serif;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', sans-serif;
+  }
+  
+  .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+@layer components {
+  .industrial-shadow {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  }
+  
+  .industrial-transition {
+    transition: all 150ms ease-out;
+  }
+  
+  .industrial-focus {
+    @apply focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
+  }
+}
