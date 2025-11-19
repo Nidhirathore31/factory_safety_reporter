@@ -7,7 +7,7 @@ const ElectricalPassCard = ({
   title = "Electrical Pass",
   description = "Document shock and arc-flash precautions, PPE, and energized work boundaries before starting electrical tasks.",
   icon = "Zap",
-  color = "bg-primary",
+  color = "bg-blue-500",
   bgColor = "bg-primary/5",
   borderColor = "border-primary/20",
 }) => {
@@ -43,6 +43,7 @@ const ElectricalPassCard = ({
 };
 
 export default ElectricalPassCard;
+
 
 
 

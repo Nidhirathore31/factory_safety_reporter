@@ -27,7 +27,7 @@ const Sidebar = ({ userRole = 'worker', isCollapsed = false, onToggleCollapse })
           label: 'Safety Forms',
           path: '/pre-job-safety-survey-form',
           icon: 'FileText',
-          roles: ['worker']
+          roles: ['worker',]
         },
         {
           label: 'Hot Work Permit',

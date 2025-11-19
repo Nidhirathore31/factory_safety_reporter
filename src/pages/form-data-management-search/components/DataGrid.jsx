@@ -50,7 +50,14 @@ const DataGrid = ({
   };
 
   const getFormTypeColor = (type) => {
-    return type === 'operational' ? 'text-success' : 'text-secondary';
+    return type === "operational"
+    ? "text-green-600"
+    : type === "maintenance"
+    ? "text-orange-500"
+    : type === "electrical pass"
+    ? "text-blue-600"
+    :  "text-yellow-500";
+      
   };
 
   const getComplianceScore = (score) => {

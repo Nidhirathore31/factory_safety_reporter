@@ -132,7 +132,45 @@ const FormDataManagementSearch = () => {
       hazardsCount: 1,
       lastUpdated: '2025-01-08T11:15:00Z',
       hazardCategories: ['Slip/Trip/Fall']
+    },
+    {
+      id: 6,
+      submissionDate: '2025-11-19T08:30:00Z',
+      worker: 'John Smith',
+      department: 'Veneer',
+      formType: 'hot work permit',
+      status: 'pending',
+      priority: 'high',
+      supervisor: 'Not Assigned',
+      complianceScore: 52,   // mapped from riskScore
+      shift: 'Day Shift B',
+      jobTask: 'Quality Control Safety Assessment',
+      location: 'Main Production Floor',
+      hazardsCount: 1,
+      lastUpdated: '2025-11-19T09:00:00Z',
+      hazardCategories: ['Chemical Testing'],
+      hasComments: false
+    },
+    
+    {
+      id: 7,
+      submissionDate: '2025-11-19T08:30:00Z',
+      worker: 'Robert Kim',
+      department: 'Veneer',
+      formType: 'electrical pass',
+      status: 'pending',
+      priority: 'medium',
+      supervisor: 'Not Assigned',
+      complianceScore: 52,   // mapped from riskScore
+      shift: 'Day Shift B',
+      jobTask: 'Quality Control Safety Assessment',  // mapped from title
+      location: 'Main Production Floor',
+      hazardsCount: 1,
+      lastUpdated: '2025-11-19T08:30:00Z',
+      hazardCategories: ['Chemical Testing'],  // mapped from complianceFlags
+      hasComments: false
     }
+    
   ];
 
   // Filter and sort data

@@ -12,6 +12,8 @@ import CompletionSidebar from './components/CompletionSidebar';
 const PreJobSafetySurveyForm = () => {
   const navigate = useNavigate();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [name,setName] = useState("")
+  const role = localStorage.getItem("userRole")
   const [formType, setFormType] = useState('operational');
   const [autoSaveStatus, setAutoSaveStatus] = useState('saved');
   const [expandedCategories, setExpandedCategories] = useState({});
@@ -552,13 +554,21 @@ const PreJobSafetySurveyForm = () => {
     }
   };
 
+  useEffect(()=>{
+    if(role=="supervisor"){
+      setName("Sarah Martinez")
+    }else if (role == "worker"){
+      setName("John Smith")
+    }
+  },[])
+
   const progress = calculateProgress();
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header userRole="worker" userName="John Smith" />
+      <Header userRole={role} userName={name} />
       <Sidebar 
-        userRole="worker" 
+        userRole={role} 
         isCollapsed={sidebarCollapsed}
         onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
       />

@@ -343,10 +343,19 @@ const WorkerDashboard = () => {
             </div>
 
             {/* Recent Submissions */}
-            <div className="space-y-4">
+      
+                        {/* <div className="space-y-4">
               <h2 className="text-lg font-semibold text-foreground">Recent Form Submissions</h2>
+              
               <RecentSubmissionsTable submissions={recentSubmissions} />
-            </div>
+            </div> */}
+            {/* Recent Submissions (Visible only for supervisor) */}
+
+  <div className="space-y-4">
+    <h2 className="text-lg font-semibold text-foreground">Recent Form Submissions</h2>
+    <RecentSubmissionsTable submissions={recentSubmissions} />
+  </div>
+
 
             {/* Footer Info */}
             <div className="bg-muted/50 rounded-lg p-4 text-center">

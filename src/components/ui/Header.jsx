@@ -18,7 +18,10 @@ const Header = ({ userRole = 'worker', userName = 'John Doe', factoryName = 'Asp
     localStorage.removeItem('tolko-safety-form');
     
     // Clear any other session data
-    localStorage.clear();
+    // localStorage.clear();
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('authTime');
+    
     sessionStorage.clear();
     
     // Close user menu

@@ -119,7 +119,35 @@ const ApprovalQueueTable = ({ filters, onFormSelect, selectedForm, onBulkAction 
       riskScore: 52,
       hasComments: false,
       complianceFlags: ['Chemical Testing']
-    }
+    },
+    {
+      id: 'SF-2025-009',
+      type: 'hot work permit',
+      title: 'Quality Control Safety Assessment',
+      worker: 'Jhon smith',
+      department: 'Veneer',
+      submittedAt: new Date('2025-11-19T08:30:00'),
+      priority: 'high',
+      slaRemaining: '6h 30m',
+      status: 'pending',
+      riskScore: 52,
+      hasComments: false,
+      complianceFlags: ['Chemical Testing']
+    },
+    {
+      id: 'SF-2025-010',
+      type: 'electrical pass',
+      title: 'Quality Control Safety Assessment',
+      worker: 'Robert Kim',
+      department: 'Veneer',
+      submittedAt: new Date('2025-11-19T08:30:00'),
+      priority: 'medium',
+      slaRemaining: '6h 30m',
+      status: 'pending',
+      riskScore: 52,
+      hasComments: false,
+      complianceFlags: ['Chemical Testing']
+    },
   ];
 
   const filteredForms = mockForms?.filter(form => {
@@ -342,7 +370,7 @@ const ApprovalQueueTable = ({ filters, onFormSelect, selectedForm, onBulkAction 
                     <div className="flex items-center space-x-2">
                       <span className="text-sm font-medium text-foreground">{form?.id}</span>
                       <div className={`w-2 h-2 rounded-full ${
-                        form?.type === 'operational' ? 'bg-success' : 'bg-warning'
+                        form?.type === 'operational' ? 'bg-success' : form.type ==="maintenace" ? 'bg-warning' : form.type === "electrical pass" ? 'bg-blue-500': 'bg-orange-400'
                       }`}></div>
                     </div>
                     <p className="text-sm text-muted-foreground line-clamp-1">{form?.title}</p>
