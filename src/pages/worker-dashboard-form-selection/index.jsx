@@ -81,7 +81,16 @@ const WorkerDashboard = () => {
       status: "pending",
       supervisor: "Luke Fien",
       feedback: "Well maintained"
-    }
+    },
+    {
+      id: 6,
+      type: "electrical pass",
+      date: "Jan 10, 2025",
+      time: "10:30 AM",
+      status: "approved",
+      supervisor: "Sarah Johnson",
+      feedback: "Good attention to detail"
+    },
   ];
 
   const safetyTips = [

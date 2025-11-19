@@ -507,43 +507,52 @@ const PreJobSafetySurveyForm = () => {
       }
     });
 
-    // SPV validation
-    const spvData = formData?.spv || {};
-    if (!spvData?.spvName) newErrors.spvName = 'SPV name is required';
-    if (!spvData?.spvEmployeeId) newErrors.spvEmployeeId = 'SPV employee ID is required';
-    if (!spvData?.signature) newErrors.spv = 'Digital signature is required';
-
-    // Critical questions validation
-    const criticalQuestions = spvData?.criticalQuestions || {};
-    const requiredQuestions = ['hazards_identified', 'controls_implemented', 'ppe_verified', 'emergency_procedures', 'work_authorization'];
-    const unansweredQuestions = requiredQuestions?.filter(q => !criticalQuestions?.[q]);
-    if (unansweredQuestions?.length > 0) {
-      newErrors.spv = 'All critical safety questions must be answered';
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors)?.length === 0;
   };
 
-  const handleSubmit = async () => {
-    if (!validateForm()) {
-      return;
-    }
+  // const handleSubmit = async () => {
+  //   if (!validateForm()) {
+  //     return;
+  //   }
 
-    setIsSubmitting(true);
+  //   setIsSubmitting(true);
     
+  //   try {
+  //     // Simulate form submission
+  //     await new Promise(resolve => setTimeout(resolve, 2000));
+      
+  //     // Clearcon= saved data
+  //     localStorage.removeItem('tolko-safety-form');
+      
+  //     // Navigate to success page or dashboard
+  //     navigate('/worker-dashboard-form-selection', { 
+  //       state: { 
+  //         message: 'Safety form submitted successfully!',
+  //         formId: `ASPEN-${new Date()?.getFullYear()}-${String(Math.floor(Math.random() * 10000))?.padStart(4, '0')}`
+  //       }
+  //     });
+  //   } catch (error) {
+  //     console.error('Form submission error:', error);
+  //     setAutoSaveStatus('error');
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // };
+
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+  
     try {
-      // Simulate form submission
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Clear saved data
+  
       localStorage.removeItem('tolko-safety-form');
-      
-      // Navigate to success page or dashboard
+  
       navigate('/worker-dashboard-form-selection', { 
         state: { 
           message: 'Safety form submitted successfully!',
-          formId: `ASPEN-${new Date()?.getFullYear()}-${String(Math.floor(Math.random() * 10000))?.padStart(4, '0')}`
+          formId: `ASPEN-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 10000)).padStart(4, '0')}`
         }
       });
     } catch (error) {
@@ -553,6 +562,7 @@ const PreJobSafetySurveyForm = () => {
       setIsSubmitting(false);
     }
   };
+  
 
   useEffect(()=>{
     if(role=="supervisor"){

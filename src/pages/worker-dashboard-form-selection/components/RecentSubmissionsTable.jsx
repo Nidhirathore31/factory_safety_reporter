@@ -21,8 +21,17 @@ const RecentSubmissionsTable = ({ submissions }) => {
   };
 
   const getFormTypeColor = (type) => {
-    return type === 'operational' ? 'text-success' : 'text-warning';
+    // return type === 'operational' ? 'text-success' : 'text-warning';
+    return type === "operational"
+    ? "text-green-600"
+    : type === "maintenance"
+    ? "text-orange-500"
+    : type === "electrical pass"
+    ? "text-blue-600"
+    :  "text-yellow-500";
+      
   };
+  
 
   return (
     <div className="bg-card rounded-lg border border-border industrial-shadow">
@@ -58,11 +67,25 @@ const RecentSubmissionsTable = ({ submissions }) => {
               <tr key={submission?.id} className="hover:bg-muted/50 industrial-transition">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center space-x-3">
-                    <Icon 
+                    {/* <Icon 
                       name={submission?.type === 'operational' ? 'Settings' : (submission?.type === 'hot work permit' ? 'Flame' : 'Wrench')} 
                       size={16} 
                       className={getFormTypeColor(submission?.type)}
-                    />
+                    /> */}
+                    <Icon
+  name={
+    submission?.type === 'operational'
+      ? 'Settings'
+      : submission?.type === 'hot work permit'
+      ? 'Flame'
+      : submission?.type === 'electrical pass'
+      ? 'Zap'
+      : 'Wrench'
+  }
+  size={16}
+  className={getFormTypeColor(submission?.type)}
+/>
+
                     <span className="text-sm font-medium text-foreground capitalize">
                       {submission?.type}
                     </span>

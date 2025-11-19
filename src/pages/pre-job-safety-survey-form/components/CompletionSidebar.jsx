@@ -43,13 +43,13 @@ const CompletionSidebar = ({
       name: 'SPV Verification',
       icon: 'Shield',
       required: true,
-      fields: ['spv']
+      fields: []
     }
   ];
 
   const getSectionCompletion = (section) => {
     let completed = 0;
-    let total = section?.fields?.length;
+    let total = section?.fields?.length || 0;
 
     section?.fields?.forEach(field => {
       if (field === 'hazardCategories') {
@@ -60,32 +60,36 @@ const CompletionSidebar = ({
           key?.startsWith('fall') || key?.startsWith('combustible')
         );
         if (hasHazardSelections) completed++;
-        console.log(hasHazardSelections,"hasHazardSelections")
+        
       } else if (field === 'inspectionCategories') {
         const hasInspactionSelections = Object.keys(formData)?.some(key => 
           key?.startsWith('ppe') || key?.startsWith('work_area') || key?.startsWith('standing_surface') ||
           key?.startsWith('tools') || key?.startsWith('equipment') || key?.startsWith('permits')
         );
         if (hasInspactionSelections) completed++;
-        console.log(hasInspactionSelections,"hasInspactionSelections")
+       
       } else if (field === 'inspectionChecklist') {
         // Check if inspection checklist has some answers
         const hasInspectionAnswers = formData?.inspectionChecklist && 
           Object.keys(formData?.inspectionChecklist)?.length > 0;
         if (hasInspectionAnswers) completed++;
-        console.log(hasInspectionAnswers,"hasInspectionAnswers")
+      
       } else if (field === 'spv') {
         // Check SPV section completion
         const spvData = formData?.spv || {};
         const hasRequiredSpvFields = spvData?.spvName && spvData?.spvEmployeeId && 
           spvData?.signature && spvData?.criticalQuestions;
         if (hasRequiredSpvFields) completed++;
-        console.log(hasRequiredSpvFields,"hasRequiredSpvFields")
+      
       } else {
         // Regular field check
         if (formData?.[field]) completed++;
       }
     });
+
+    if (total === 0) {
+      return { completed: 1, total: 1, percentage: 100 };
+    }
 
     return { completed, total, percentage: Math.round((completed / total) * 100) };
   };
