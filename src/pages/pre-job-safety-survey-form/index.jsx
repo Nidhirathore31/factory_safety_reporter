@@ -8,6 +8,7 @@ import HazardCategory from './components/HazardCategory';
 import InspectionChecklist from './components/InspectionChecklist';
 import SPVSection from './components/SPVSection';
 import CompletionSidebar from './components/CompletionSidebar';
+import { appendSubmissionRecord } from '../../utils/submissionStorage';
 
 const PreJobSafetySurveyForm = () => {
   const navigate = useNavigate();
@@ -541,23 +542,91 @@ const PreJobSafetySurveyForm = () => {
   // };
 
 
+  // const handleSubmit = async () => {
+  //   setIsSubmitting(true);
+  
+  //   try {
+  //     await new Promise(resolve => setTimeout(resolve, 2000));
+
+  //     appendSubmissionRecord({
+  //       type: formType,
+  //       date: formData?.date,
+  //       time: formData?.time,
+  //       supervisor: formData?.spv?.spvName || 'Pending Supervisor',
+  //       feedback: formData?.spv?.comments || '',
+  //       details: {
+  //         employees: formData?.employeeNames,
+  //         employeeId: formData?.employeeId,
+  //         jobTask: formData?.jobTask,
+  //         location: formData?.location,
+  //         department: formData?.department,
+  //         inspector: formData?.spv?.spvName,
+  //       },
+  //     });
+  
+  //     localStorage.removeItem('tolko-safety-form');
+  
+  //     navigate('/worker-dashboard-form-selection', { 
+  //       state: { 
+  //         message: 'Safety form submitted successfully!',
+  //         formId: `ASPEN-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 10000)).padStart(4, '0')}`
+  //       }
+  //     });
+  //   } catch (error) {
+  //     console.error('Form submission error:', error);
+  //     setAutoSaveStatus('error');
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // };
+  
   const handleSubmit = async () => {
     setIsSubmitting(true);
   
     try {
       await new Promise(resolve => setTimeout(resolve, 2000));
   
-      localStorage.removeItem('tolko-safety-form');
-  
-      navigate('/worker-dashboard-form-selection', { 
-        state: { 
-          message: 'Safety form submitted successfully!',
-          formId: `ASPEN-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 10000)).padStart(4, '0')}`
-        }
+      appendSubmissionRecord({
+        type: formType,
+        date: formData?.date,
+        time: formData?.time,
+        supervisor: formData?.spv?.spvName || 'Pending Supervisor',
+        feedback: formData?.spv?.comments || '',
+        details: {
+          employees: formData?.employeeNames,
+          employeeId: formData?.employeeId,
+          jobTask: formData?.jobTask,
+          location: formData?.location,
+          department: formData?.department,
+          inspector: formData?.spv?.spvName,
+        },
       });
+  
+      localStorage.removeItem("tolko-safety-form");
+  
+      // 🔥 GET USER ROLE (choose whichever you use)
+      const userRole =localStorage.getItem("userRole"); // fallback if stored in localStorage
+  
+      console.log("User Role =", userRole);
+  
+      // 🔥 ROLE-BASED PATH
+      const redirectPath =
+        userRole === "supervisor"
+          ? "/supervisor-dashboard-approval-queue"
+          : "/worker-dashboard-form-selection";
+  
+      navigate(redirectPath, {
+        state: {
+          message: "Safety form submitted successfully!",
+          formId: `ASPEN-${new Date().getFullYear()}-${String(
+            Math.floor(Math.random() * 10000)
+          ).padStart(4, "0")}`,
+        },
+      });
+  
     } catch (error) {
-      console.error('Form submission error:', error);
-      setAutoSaveStatus('error');
+      console.error("Form submission error:", error);
+      setAutoSaveStatus("error");
     } finally {
       setIsSubmitting(false);
     }

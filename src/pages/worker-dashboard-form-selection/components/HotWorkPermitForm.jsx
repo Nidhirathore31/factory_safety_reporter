@@ -4,6 +4,7 @@ import Sidebar from "components/ui/Sidebar";
 import Button from "components/ui/Button";
 import Input from "components/ui/Input";
 import { Navigate, useNavigate } from "react-router-dom";
+import { appendSubmissionRecord } from "../../../utils/submissionStorage";
 
 const HotWorkPermitForm = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -116,6 +117,21 @@ const HotWorkPermitForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    appendSubmissionRecord({
+      type: "hot work permit",
+      date: formData?.date,
+      time: formData?.timeStarted,
+      supervisor: formData?.authorizedBy || "Hot Work Authorizer",
+      feedback: formData?.natureOfJob || "",
+      details: {
+        location: formData?.location,
+        jobNumber: formData?.jobNumber,
+        hotWorkBy: formData?.hotWorkBy,
+        fireWatch: formData?.fireWatch,
+      },
+    });
+
     console.log("Form Submitted:", formData);
     navigate("/worker-dashboard-form-selection");
   };

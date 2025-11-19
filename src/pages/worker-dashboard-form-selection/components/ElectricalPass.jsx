@@ -7,6 +7,7 @@ import Button from "components/ui/Button";
 import Icon from "components/AppIcon";
 import { Checkbox } from "components/ui/Checkbox";
 import { useNavigate } from "react-router-dom";
+import { appendSubmissionRecord } from "../../../utils/submissionStorage";
 
 const ElectricalPass = ({ sidebarCollapsed }) => {
   const [open, setOpen] = useState(false);
@@ -192,6 +193,23 @@ const ElectricalPass = ({ sidebarCollapsed }) => {
   };
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    appendSubmissionRecord({
+      type: "electrical pass",
+      date: form?.date,
+      time: form?.time,
+      feedback: form?.jobTaskDescription || "",
+      status: form?.condition === "Abnormal" ? "under_review" : "pending",
+      details: {
+        employees: form?.employees,
+        area: form?.jobTaskArea,
+        location: form?.jobTaskLocation,
+        equipment: form?.equipment,
+        voltageAC: form?.vac,
+        voltageDC: form?.vdc,
+      },
+    });
+
     console.log("Form Submitted:", form);
     navigate("/worker-dashboard-form-selection");
   };

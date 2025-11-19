@@ -12,12 +12,77 @@ import Button from '../../components/ui/Button';
 import Icon from '../../components/AppIcon';
 import HotWorkPermitCard from './components/HotWorkPermitCard';
 import ElectricalPassCard from './components/ElectricalPassCard';
+import { getStoredSubmissions, SUBMISSION_STORAGE_EVENT } from '../../utils/submissionStorage';
+
+const defaultRecentSubmissions = [
+  {
+    id: 1,
+    type: "operational",
+    date: "Jan 08, 2025",
+    time: "10:30 AM",
+    status: "approved",
+    supervisor: "Sarah Johnson",
+    feedback: "Good attention to detail"
+  },
+  {
+    id: 2,
+    type: "maintenance",
+    date: "Jan 07, 2025",
+    time: "02:15 PM",
+    status: "pending",
+    supervisor: "Mike Chen",
+    feedback: null
+  },
+  {
+    id: 3,
+    type: "operational",
+    date: "Jan 06, 2025",
+    time: "11:45 AM",
+    status: "under_review",
+    supervisor: "Sarah Johnson",
+    feedback: "Reviewing hazard assessment"
+  },
+  {
+    id: 4,
+    type: "maintenance",
+    date: "Jan 05, 2025",
+    time: "09:20 AM",
+    status: "approved",
+    supervisor: "Mike Chen",
+    feedback: "Excellent documentation"
+  },
+  {
+    id: 5,
+    type: "hot work permit",
+    date: "Aug 18, 2025",
+    time: "02:20 PM",
+    status: "pending",
+    supervisor: "Luke Fien",
+    feedback: "Well maintained"
+  },
+  {
+    id: 6,
+    type: "electrical pass",
+    date: "Jan 10, 2025",
+    time: "10:30 AM",
+    status: "approved",
+    supervisor: "Sarah Johnson",
+    feedback: "Good attention to detail"
+  },
+];
 
 const WorkerDashboard = () => {
   const navigate = useNavigate();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [recentSubmissions, setRecentSubmissions] = useState(() => {
+    if (typeof window === 'undefined') {
+      return defaultRecentSubmissions;
+    }
+    const stored = getStoredSubmissions();
+    return stored?.length ? stored : defaultRecentSubmissions;
+  });
 
   // Mock data for worker dashboard
   const workerInfo = {
@@ -35,63 +100,6 @@ const WorkerDashboard = () => {
     safetyScore: 94,
     incidentFreeDays: 127
   };
-
-  const recentSubmissions = [
-    {
-      id: 1,
-      type: "operational",
-      date: "Jan 08, 2025",
-      time: "10:30 AM",
-      status: "approved",
-      supervisor: "Sarah Johnson",
-      feedback: "Good attention to detail"
-    },
-    {
-      id: 2,
-      type: "maintenance",
-      date: "Jan 07, 2025",
-      time: "02:15 PM",
-      status: "pending",
-      supervisor: "Mike Chen",
-      feedback: null
-    },
-    {
-      id: 3,
-      type: "operational",
-      date: "Jan 06, 2025",
-      time: "11:45 AM",
-      status: "under_review",
-      supervisor: "Sarah Johnson",
-      feedback: "Reviewing hazard assessment"
-    },
-    {
-      id: 4,
-      type: "maintenance",
-      date: "Jan 05, 2025",
-      time: "09:20 AM",
-      status: "approved",
-      supervisor: "Mike Chen",
-      feedback: "Excellent documentation"
-    },
-    {
-      id: 5,
-      type: "hot work permit",
-      date: "Aug 18, 2025",
-      time: "02:20 PM",
-      status: "pending",
-      supervisor: "Luke Fien",
-      feedback: "Well maintained"
-    },
-    {
-      id: 6,
-      type: "electrical pass",
-      date: "Jan 10, 2025",
-      time: "10:30 AM",
-      status: "approved",
-      supervisor: "Sarah Johnson",
-      feedback: "Good attention to detail"
-    },
-  ];
 
   const safetyTips = [
     {
@@ -190,6 +198,24 @@ const WorkerDashboard = () => {
     a?.click();
     window.URL?.revokeObjectURL(url);
   };
+
+  useEffect(() => {
+    const refreshSubmissions = () => {
+      const stored = getStoredSubmissions();
+      if (stored?.length) {
+        setRecentSubmissions(stored);
+      } else {
+        setRecentSubmissions(defaultRecentSubmissions);
+      }
+    };
+
+    refreshSubmissions();
+    window.addEventListener(SUBMISSION_STORAGE_EVENT, refreshSubmissions);
+
+    return () => {
+      window.removeEventListener(SUBMISSION_STORAGE_EVENT, refreshSubmissions);
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">
