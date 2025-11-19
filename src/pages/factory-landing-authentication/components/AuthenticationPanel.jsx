@@ -17,7 +17,7 @@ const AuthenticationPanel = ({ onAuthenticate, isLoading }) => {
   const mockCredentials = {
     worker: { username: 'worker@aspen.com', password: 'Worker123!' },
     supervisor: { username: 'supervisor@aspen.com', password: 'Super123!' },
-    admin: { username: 'admin@aspen.com', password: 'Admin123!', mfa: '123456' }
+    // admin: { username: 'admin@aspen.com', password: 'Admin123!', mfa: '123456' }
   };
 
   const handleCredentialChange = (field, value) => {
