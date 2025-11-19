@@ -132,7 +132,7 @@ const DataGrid = ({
         </div>
       </div>
       {/* Table Body */}
-      <div className="divide-y divide-border max-h-[calc(100vh-300px)] overflow-y-auto">
+      <div className="divide-y divide-border max-h-[calc(100vh-300px)] overflow-y-auto pb-10">
         {data?.map((row) => (
           <React.Fragment key={row?.id}>
             <div

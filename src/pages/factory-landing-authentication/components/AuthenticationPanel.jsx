@@ -56,7 +56,7 @@ const AuthenticationPanel = ({ onAuthenticate, isLoading }) => {
     );
 
     if (!role) {
-      setErrors({ general: 'Invalid username or password. Use: worker@aspen.com/Worker123!, supervisor@aspen.com/Super123!, or admin@aspen.com/Admin123!' });
+      setErrors({ general: 'Invalid username or password. Use: worker@aspen.com/Worker123!, or supervisor@aspen.com/Super123!' });
       return;
     }
 
